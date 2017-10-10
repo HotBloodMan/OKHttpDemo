@@ -104,6 +104,7 @@ public class OkHttp3Downloader implements Downloader {
     }
 
     public OkHttp3Downloader(OkHttpClient client) {
+        System.out.println("------------->>>> OkHttp3Downloader");
         this.client = client;
         this.cache = client.cache();
     }

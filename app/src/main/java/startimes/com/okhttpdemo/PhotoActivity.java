@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.support.annotation.IntRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,11 +18,18 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Request;
 import com.squareup.picasso.Transformation;
 
+import java.io.IOException;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 public class PhotoActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -29,11 +37,14 @@ public class PhotoActivity extends AppCompatActivity implements View.OnClickList
     private ImageView ivGlide;
     private Button btn;
     String photoUrl="http://n.sinaimg.cn/translate/20160819/9BpA-fxvcsrn8627957.jpg";
+    private MyProgressBar myProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ivPicasso = (ImageView) findViewById(R.id.iv_picasso);
+        myProgressBar = (MyProgressBar) findViewById(R.id.mpb);
         ivGlide = (ImageView) findViewById(R.id.iv_glide);
         btn = (Button) findViewById(R.id.btn);
         btn.setOnClickListener(this);
@@ -67,18 +78,59 @@ public class PhotoActivity extends AppCompatActivity implements View.OnClickList
 //            }
 //        });
         
-        //自定义线程池
-        int CPU_COUNT  = Runtime.getRuntime().availableProcessors();
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(CPU_COUNT + 1, CPU_COUNT * 2 + 1
-                , 1, TimeUnit.MINUTES, new PriorityBlockingQueue<Runnable>());
-        Picasso picasso = new Picasso.Builder(this)
-                .executor(threadPoolExecutor)
-                //自定义下载器
-                .downloader(new OkHttp3Downloader(this.getExternalCacheDir()))
-                .build();
-        picasso.setSingletonInstance(picasso);
-        picasso.load(photoUrl).into(ivPicasso);
+        //10.09自定义线程池
+//        int CPU_COUNT  = Runtime.getRuntime().availableProcessors();
+//        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(CPU_COUNT + 1, CPU_COUNT * 2 + 1
+//                , 1, TimeUnit.MINUTES, new PriorityBlockingQueue<Runnable>());
+//        Picasso picasso = new Picasso.Builder(this)
+//                .executor(threadPoolExecutor)
+//                //自定义下载器
+//                .downloader(new OkHttp3Downloader(this.getExternalCacheDir()))
+//                .build();
+//        picasso.setSingletonInstance(picasso);
+//        picasso.load(photoUrl).into(ivPicasso);
 
+        //10.10
+        OkHttpClient client=new OkHttpClient.Builder()
+                .addNetworkInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Response response = chain.proceed(chain.request());
+                        return response.newBuilder()
+                                .body(new MyProgressbarResponseBody(new ProgressListener() {
+                                    @Override
+                                    public void update(@IntRange(from = 0, to = 100) final int progress) {
+                                        System.out.println("---------------->>> 111");
+                                        //更新进度条
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                System.out.println("---------------->>>222");
+                                                Log.d("TAG", "run: " + progress);
+                                                try {
+                                                    Thread.sleep(1000);
+                                                } catch (InterruptedException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                myProgressBar.setSweepAngle(progress * 360f / 100);
+                                            }
+                                        });
+                                    }
+                                }, response.body()))
+                                .build();
+
+                    }
+                })
+                //设置缓存位置，Picasso下载的图片将缓存在这里
+                .cache(new Cache(this.getExternalCacheDir(), 10 * 1024 * 1024))
+                .build();
+        System.out.println("---------------->>> 333");
+        Picasso picasso = new Picasso
+                .Builder(this)
+                .downloader(new OkHttp3Downloader(client))
+                .build();
+//        picasso.setSingletonInstance(picasso);
+        picasso.load(photoUrl).into(ivPicasso);
 
     }
 

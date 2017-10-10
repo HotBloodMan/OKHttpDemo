@@ -7,7 +7,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="startimes.com.okhttpdemo.PhotoActivity">
-
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/iv_picasso"
         android:layout_width="wrap_content"
@@ -15,6 +17,13 @@
         android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
         />
+    <startimes.com.okhttpdemo.MyProgressBar
+        android:id="@+id/mpb"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="30dp"/>
