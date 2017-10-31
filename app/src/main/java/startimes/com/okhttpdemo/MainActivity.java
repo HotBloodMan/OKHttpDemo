@@ -1,12 +1,16 @@
 package startimes.com.okhttpdemo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.github.mzule.activityrouter.router.Routers;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,21 +29,36 @@ public class MainActivity extends Activity {
     private Button btnMain;
     private TextView tvMain;
     final OkHttpClient client = new OkHttpClient();
+    public static String TAG= MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnMain = (Button) findViewById(R.id.btn);
+
         tvMain = (TextView) findViewById(R.id.tv);
         btnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("TAG","onClick");
-//                getRequest();
+                Log.i(TAG,"onClick----------------------->>>");
+                getRequest();
                 //异步get
-                getRequest2();
+//                getRequest2();
+//                new Thread(){
+//                    @Override
+//                    public void run() {
+//                        super.run();
+//                        post();
+//                    }
+//                }.start();
+
+//                startActivity(new Intent(MainActivity.this));
+//          Routers.open(MainActivity.this,"modularization://books_list");
+                Log.i(TAG,"onClick--------222--------------->>>");
+
             }
+
         });
     }
 
@@ -61,6 +80,7 @@ public class MainActivity extends Activity {
 
         new Thread() {
             public void run()  {
+                 Log.d(TAG,TAG+" enter subthread----->>> ");
                 //添加请求头
 //                Request request = new Request.Builder()
 //                        .url("https://api.github.com/repos/square/okhttp/issues")
@@ -101,14 +121,15 @@ public class MainActivity extends Activity {
 
                 try {
                     response = client.newCall(request).execute();
-                    if (!response.isSuccessful()) throw new IOException("Unexpected code========= " + response);
-
-                    System.out.println("response==== "+response.body().string());
+                    tvMain.setText(response+" 123");
+                     Log.d(TAG,TAG+" response----->>> "+response);
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code========= " + response);
+                    Log.d(TAG,TAG+" response222----->>> "+response.body().string());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
         }.start();
 
     }
@@ -139,9 +160,9 @@ public class MainActivity extends Activity {
                     Request request = new Request.Builder().url(url).build();
                     okhttp3.Response response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
-                        Log.i("TAG", response.body().string());
+                        Log.i(TAG, response.body().string());
                     } else {
-                        Log.i("TAG", "okHttp is request error");
+                        Log.i(TAG, "okHttp is request error");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -152,5 +173,33 @@ public class MainActivity extends Activity {
     }
     private void print(Object obj){
         System.out.print(obj);
+    }
+
+    public static final MediaType MEDIA_TYPE_MARKDOWN
+            = MediaType.parse("text/x-markdown; charset=utf-8");
+
+    public void post() {
+
+             Log.d(TAG,TAG+" ----->>>post() ");
+
+            File file = new File("H:\\out.txt");
+
+            Request request = new Request.Builder()
+                    .url("https://api.github.com/markdown/raw")
+                    .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, file))
+                    .build();
+
+
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            Log.d(TAG,TAG+" ----->>>post() "+response.body().string());
+            System.out.println(response.body().string());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

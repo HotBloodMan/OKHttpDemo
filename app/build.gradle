@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'com.jakewharton.hugo'
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "startimes.com.okhttpdemo"
-        minSdkVersion 19
-        targetSdkVersion 23
+        minSdkVersion 14
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
@@ -17,13 +17,35 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            if (IsBuildMudle.toBoolean()) {
+                java.srcDirs += "src/main/debug/java/";
+            } else {
+//                java.srcDirs += "src/main/release/java/";
+            }
+        }
+    }
+
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    compile 'com.github.bumptech.glide:glide:3.5.2'
-    compile 'com.squareup.picasso:picasso:2.5.1'
+    println IsBuildMudle.toBoolean()
+    if (!IsBuildMudle.toBoolean()) {
+        compile project(':activitymodels')
+//        compile project(':ModuleB')
+    } else {
+        compile project(':Library')
+        //编译库文件
+    }
+//    annotationProcessor 'com.github.mzule.activityrouter:compiler:1.1.7'
+//    compile 'com.android.support:appcompat-v7:23.0.1'
+//    compile 'com.squareup.okhttp3:okhttp:3.9.0'
+//    compile 'com.github.bumptech.glide:glide:3.5.2'
+//    compile 'com.squareup.picasso:picasso:2.5.1'
+//    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.github.mzule.activityrouter:activityrouter:1.2.2'
+
+//    annotationProcessor 'com.github.mzule.activityrouter:compiler:1.1.7'
 }

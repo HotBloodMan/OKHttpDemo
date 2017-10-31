@@ -38,6 +38,7 @@ public class PhotoActivity extends AppCompatActivity implements View.OnClickList
     private Button btn;
     String photoUrl="http://n.sinaimg.cn/translate/20160819/9BpA-fxvcsrn8627957.jpg";
     private MyProgressBar myProgressBar;
+    private Button btn2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class PhotoActivity extends AppCompatActivity implements View.OnClickList
         myProgressBar = (MyProgressBar) findViewById(R.id.mpb);
         ivGlide = (ImageView) findViewById(R.id.iv_glide);
         btn = (Button) findViewById(R.id.btn);
+        btn2 = (Button) findViewById(R.id.btn2);
         btn.setOnClickListener(this);
     }
 
@@ -132,6 +134,26 @@ public class PhotoActivity extends AppCompatActivity implements View.OnClickList
 //        picasso.setSingletonInstance(picasso);
         picasso.load(photoUrl).into(ivPicasso);
 
+    }
+    public void getPhoto(View v){
+        String url="https://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=https%3A%2F%2Ftimgsa.baidu.com%2Ftimg%3Fimage%26quality%3D80%26size%3Db9999_10000%26sec%3D1507717530859%26di%3Dbc358da1e94a3565bf7deb711cd63b68%26imgtype%3D0%26src%3Dhttp%253A%252F%252Fb.hiphotos.baidu.com%252Fimage%252Fpic%252Fitem%252F55e736d12f2eb9380291af03df628535e4dd6f47.jpg&thumburl=https%3A%2F%2Fss1.bdstatic.com%2F70cFvXSh_Q1YnxGkpoWK1HF6hhy%2Fit%2Fu%3D131043287%2C2697117014%26fm%3D200%26gp%3D0.jpg";
+        int resourcesId=R.mipmap.ic_launcher;
+        //加载gif
+//        Glide.with(PhotoActivity.this).load(url).into(ivGlide);
+        //强化版gif
+//        Glide.with(PhotoActivity.this).load(url).asGif().error(R.mipmap.ic_launcher).into(ivGlide);
+        //用bitMap播放Gif 更快
+//        Glide.with(PhotoActivity.this).load(url).asBitmap().into(ivGlide);
+        Glide.with(PhotoActivity.this).load(photoUrl)
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher)
+                //加点动画crossFade()/fadeFade(int duration)
+                .crossFade(1000)
+                //调整图片大小
+//                .override(600,200)
+                //来点缩略图
+                .thumbnail(0.3f)
+                .into(ivGlide);
     }
 
 
