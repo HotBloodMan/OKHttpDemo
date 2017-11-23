@@ -8,6 +8,7 @@ import android.util.LruCache;
 import android.view.View;
 import android.widget.Button;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -20,6 +21,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class VolleyActivity extends AppCompatActivity implements View.OnClickListener {
     public static String TAG= VolleyActivity.class.getSimpleName();
@@ -64,6 +68,30 @@ public class VolleyActivity extends AppCompatActivity implements View.OnClickLis
                 Log.d(TAG, TAG + " ----->>>error= " + error.toString());
             }
         });
+
+//2.2 Post
+        StringRequest stringRequests = new StringRequest(Request.Method.POST,"https://www.test.com", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+
+        }
+    }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+        @Override
+        protected Map<String, String> getParams() throws AuthFailureError {
+            //用HashMap来存储请求参数
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("param1","value1");
+            map.put("param2","value2");
+            return map;
+        }
+    };
+
 
         //3 图片
 //        BitmapCache bitmapCache = new BitmapCache();
