@@ -33,5 +33,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.1'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'org.greenrobot:eventbus:3.0.0'
+
+    compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.github.mzule.activityrouter:activityrouter:1.2.2'
 }
