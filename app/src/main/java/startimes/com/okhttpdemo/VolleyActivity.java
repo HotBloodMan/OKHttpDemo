@@ -109,7 +109,7 @@ public class VolleyActivity extends AppCompatActivity implements View.OnClickLis
 //        });
         //4 JsonObjectRequest和JsonArrayRequest
             jsonRequest();
-//        mQueue.add();
+        mQueue.add(stringRequest);
     }
 
     private void jsonRequest() {
@@ -129,16 +129,39 @@ public class VolleyActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public class BitmapCache implements ImageLoader.ImageCache {
-        private LruCache<String, Bitmap> mCache;
-        public BitmapCache() {
-            int maxSize = 10 * 1024 * 1024;
+//        private LruCache<String, Bitmap> mCache;
+//        public BitmapCache() {
+//            int maxSize = 10 * 1024 * 1024;
+//            mCache = new LruCache<String, Bitmap>(maxSize) {
+//                @Override
+//                protected int sizeOf(String key, Bitmap bitmap) {
+//                    return bitmap.getRowBytes() * bitmap.getHeight();
+//                }
+//            };
+//        }
+//        @Override
+//        public Bitmap getBitmap(String url) {
+//            return mCache.get(url);
+//        }
+//
+//        @Override
+//        public void putBitmap(String url, Bitmap bitmap) {
+//            mCache.put(url, bitmap);
+//        }
+
+
+
+        private LruCache<String,Bitmap> mCache;
+        public  BitmapCache(){
+            int maxSize=10*1024*1024;
             mCache = new LruCache<String, Bitmap>(maxSize) {
                 @Override
-                protected int sizeOf(String key, Bitmap bitmap) {
-                    return bitmap.getRowBytes() * bitmap.getHeight();
+                protected int sizeOf(String key, Bitmap value) {
+                    return value.getRowBytes() * value.getHeight();
                 }
             };
         }
+
         @Override
         public Bitmap getBitmap(String url) {
             return mCache.get(url);
@@ -146,7 +169,7 @@ public class VolleyActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         public void putBitmap(String url, Bitmap bitmap) {
-            mCache.put(url, bitmap);
+            mCache.put(url,bitmap);
         }
     }
 }
